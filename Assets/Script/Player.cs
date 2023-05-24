@@ -2,42 +2,62 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class Player : MonoBehaviour
 {
-    bool is_Goal;
+    [SerializeField] GameObject Canvas;
+    [SerializeField] GameObject Spawn;
+
+    public static bool is_Goal;
+    static bool is_PlayMode;
+
+    int timer;
 
     void Start()
     {
+        Canvas.SetActive(true);
+        transform.GetComponent<Rigidbody2D>().Sleep();
         transform.parent = null;
         is_Goal = false;
+        is_PlayMode = false;
 
-        // スタートしたら重力は外す
-        transform.GetComponent<Rigidbody2D>().Sleep();
+        timer = 600;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        // プレイモードじゃなければリターンする
+        if (!is_PlayMode) return;
+        
+        // タイマースタート処理
+        timer--;
+        if (timer < 0) timer = 0;
+        if (timer > 0)
         {
-            // スリープじゃなければ処理しない
-            if (!transform.GetComponent<Rigidbody2D>().IsSleeping()) return;
-
-            // スリープ解除
+            transform.GetComponent<Rigidbody2D>().Sleep();
+            transform.position = Spawn.transform.position;
+            return;
+        }
+        else
+        {
             transform.GetComponent<Rigidbody2D>().WakeUp();
         }
 
-        if(is_Goal)
+        if (is_Goal)
         {
-            transform.position = GameObject.FindGameObjectWithTag("Goal").transform.position;
+            // 移動量をなくす
+            transform.GetComponent<Rigidbody2D>().velocity = new Vector2(0.0f, 0.0f);
             // 回転量をリセット
             transform.rotation = Quaternion.identity;
             // リジッドボディを外す
             transform.GetComponent<Rigidbody2D>().Sleep();
         }
 
-        if (transform.position.y < -10.0f)
+        // 死ぬかスペースを押したらリトライ
+        if (transform.position.y < -10.0f ||
+            Input.GetKeyDown(KeyCode.Space))
         {
             SceneManager.LoadScene("PlayScene");
         }
@@ -49,5 +69,16 @@ public class Player : MonoBehaviour
         {
             is_Goal = true;
         }
+    }
+
+    public void StartGame()
+    {
+        is_PlayMode = true;
+        Canvas.SetActive(false);
+    }
+
+    public void ReStart()
+    {
+        SceneManager.LoadScene("PlayScene");
     }
 }

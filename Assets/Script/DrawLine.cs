@@ -26,7 +26,9 @@ public class DrawLine : MonoBehaviour
 
         // •`‰æˆ—
         Drawing();
-     
+
+        // Šm”F—p
+        Debug.Log(GetTimer());
     }
 
     void Drawing()
@@ -66,5 +68,10 @@ public class DrawLine : MonoBehaviour
                 touchPos = endPos;
             }
         }
+    }
+
+    public int GetTimer()
+    {
+        return ((int)(lineCanDrawTime * 60 - timer) / (int)(lineCanDrawTime * 60)) * 100;
     }
 }
