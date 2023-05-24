@@ -5,33 +5,30 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     new Rigidbody2D rigidbody;
-    [SerializeField] float moveSpeed;
-    [SerializeField] float jumpPower = 10;
+    [SerializeField] GameObject egg;
+    [SerializeField] float jumpPower = 100;
 
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rigidbody = egg.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.RightArrow))
+        if(Input.GetKey(KeyCode.RightArrow))
         {
-            transform.Translate(new Vector2(moveSpeed, 0.0f));
-            // âEå¸Ç´Ç…Ç∑ÇÈ
-            transform.localScale = Vector2.one;
+            rigidbody.AddForce(transform.right * 0.5f);
         }
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if(Input.GetKey(KeyCode.LeftArrow))
         {
-            transform.Translate(new Vector2(-moveSpeed,0.0f));
-            // ç∂å¸Ç´Ç…Ç∑ÇÈ
-            transform.localScale = new Vector2(-1, 1);
+            rigidbody.AddForce(transform.right * -0.5f);
         }
-
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
+            if (egg.GetComponent<Stats>().JumpNum < 0) return;
             rigidbody.AddForce(transform.up * jumpPower);
+            egg.GetComponent<Stats>().JumpNum--;
         }
     }
 }
